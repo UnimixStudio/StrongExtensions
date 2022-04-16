@@ -1,0 +1,18 @@
+{
+    "name": "StrongExtensions.Newtonsoft.Json",
+    "rootNamespace": "",
+    "references": [
+        "GUID:867ebe6eb897f4d4393c342ac1997326"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Newtonsoft.Json.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

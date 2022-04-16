@@ -1,0 +1,16 @@
+{
+    "name": "StrongExtensions.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8bed0f59d245ba840ba5afec4c5ceb72"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

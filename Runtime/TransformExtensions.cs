@@ -26,6 +26,9 @@ namespace StrongExtensions
                 child.parent = parent;
         }
 
+        public static Transform[] GetActiveChildren(this Transform parent) =>
+            parent.Cast<Transform>().Where(child => child.gameObject.activeSelf).ToArray();
+
         public static Vector3 Center(this IEnumerable<Transform> transforms)
         {
             if (transforms == null)

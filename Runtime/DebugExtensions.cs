@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Management.Instrumentation;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
@@ -36,7 +39,7 @@ namespace StrongExtensions
             string logName = decoratorExist
                 ? DebugColorDecorators[type].DecorateName(name)
                 : $"{name}";
-            
+
             string logValue = decoratorExist
                 ? DebugColorDecorators[type].DecorateValue(value)
                 : $"{value}";
@@ -54,6 +57,7 @@ namespace StrongExtensions
 
             string prettyJson = value.ToPrettyJson(name);
             Debug.Log(prettyJson);
+
             return value;
         }
 
@@ -135,10 +139,13 @@ namespace StrongExtensions
 
         public static void LogMethod<T>(this T instance, string methodName) =>
             Debug.Log(
-                $"{typeof(T).Name.ToHexColor(HexColors.Shamrock)}({instance.GetHashCode()}).{methodName.ToHexColor(HexColors.SandyBrown)}",
+                $"{typeof(T).Name.ToHexColor(HexColors.Shamrock)}({instance.GetHashCode()})." +
+                $"{methodName.ToHexColor(HexColors.SandyBrown)}",
                 instance as Object);
 
         public static void LogConstructor<T>(this T instance) =>
-            Debug.Log($"{typeof(T).Name.ToHexColor(HexColors.Shamrock)}({instance.GetHashCode()})", instance as Object);
+            Debug.Log(
+                $"{typeof(T).Name.ToHexColor(HexColors.Shamrock)}({instance.GetHashCode()})", 
+                instance as Object);
     }
 }

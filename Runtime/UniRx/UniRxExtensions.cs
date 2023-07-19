@@ -19,5 +19,8 @@ namespace StrongExtensions
 
         public static void Send(this IObserver<Unit> observable) =>
             observable.With(x => x.OnNext(Unit.Default));
+
+        public static IObserver<T> ToObserver<T>(this IReactiveProperty<T> reactiveProperty) =>
+            Observer.Create((T value) => reactiveProperty.Value = value);
     }
 }

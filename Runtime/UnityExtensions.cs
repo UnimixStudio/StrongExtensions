@@ -13,14 +13,11 @@ namespace StrongExtensions
 
         public static void ReNameWithID(this Object obj, string newName = "")
         {
-            string name = newName.IsNullOrWhitespace()
-                ? obj.name
-                : newName;
+            string name = newName.IsNullOrWhitespace() ? obj.name : newName;
 
             int instanceID = obj.GetInstanceID();
             obj.name = $"{name}{instanceID}";
         }
-
 
         public static void ValidateComponent<T>(this GameObject gameObject, T component) where T : Component
         {
@@ -29,10 +26,7 @@ namespace StrongExtensions
         }
 
         public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component =>
-            gameObject.TryGetComponent(out T component)
-                ? component
-                : gameObject.AddComponent<T>();
-
+            gameObject.TryGetComponent(out T component) ? component : gameObject.AddComponent<T>();
 
         public static T GetOrAddComponent<T>(this Component component) where T : Component =>
             GetOrAddComponent<T>(component.gameObject);
@@ -46,15 +40,15 @@ namespace StrongExtensions
             action?.Invoke();
         }
 
-        public static void SetRect
-            (this RectTransform rectTransform, float left = 0f, float top = 0f, float right = 0f, float bottom = 0f)
+        public static void SetRect(this RectTransform rectTransform, float left = 0f, float top = 0f, float right = 0f,
+            float bottom = 0f)
         {
             rectTransform.offsetMin = new Vector2(left, bottom);
             rectTransform.offsetMax = new Vector2(-right, -top);
         }
 
-        public static void SetFullSizeOfParent
-            (this RectTransform rectTransform, Vector2 anchoredPosition = new Vector2())
+        public static void SetFullSizeOfParent(this RectTransform rectTransform,
+            Vector2 anchoredPosition = new Vector2())
         {
             rectTransform.anchorMin = Vector2.zero;
             rectTransform.anchorMax = Vector2.one;
@@ -65,25 +59,12 @@ namespace StrongExtensions
         public static void SetRect(this RectTransform rectTransform, float all) =>
             rectTransform.SetRect(all, all, all, all);
 
-        public static void DoVirtualFloat
-        (
-            this MonoBehaviour monoBehaviour,
-            float startValue,
-            float endValue,
-            float duration,
-            Action<float> action,
-            Action onComplete = null
-        ) =>
+        public static void DoVirtualFloat(this MonoBehaviour monoBehaviour, float startValue, float endValue,
+            float duration, Action<float> action, Action onComplete = null) =>
             monoBehaviour.StartCoroutine(DoVirtualFloatCoroutine(startValue, endValue, duration, action, onComplete));
 
-        private static IEnumerator DoVirtualFloatCoroutine
-        (
-            float startValue,
-            float endValue,
-            float duration,
-            Action<float> action,
-            Action onComplete = null
-        )
+        private static IEnumerator DoVirtualFloatCoroutine(float startValue, float endValue, float duration,
+            Action<float> action, Action onComplete = null)
         {
             float time = 0;
             while (time <= duration)
@@ -101,28 +82,18 @@ namespace StrongExtensions
             onComplete?.Invoke();
         }
 
+        public static Transform FindNearWith(this IEnumerable<GameObject> points, Transform target) =>
+            FindNearWith(points.Select(gameObject => gameObject.transform), target);
+
         public static Transform FindNearWith(this IEnumerable<Transform> points, Transform target) =>
             FindNearWith(points.ToList(), target);
 
         public static Transform FindNearWith(this List<Transform> points, Transform target)
         {
-            return points.IsNullOrEmpty()
-                ? null
-                : points.OrderBy(SqrMagnitude).First();
+            return points.IsNullOrEmpty() ? null : points.OrderBy(SqrMagnitude).First();
 
-            float SqrMagnitude(Transform transform) =>
-                (target.position - transform.position).sqrMagnitude;
+            float SqrMagnitude(Transform transform) => (target.position - transform.position).sqrMagnitude;
         }
-
-        public static float DistanceTo(this Transform transform, Transform other)
-        {
-            Vector3 position = transform.position;
-            Vector3 otherPosition = other.position;
-            return Vector3.Distance(position, otherPosition);
-        }
-
-        public static float DistanceTo(this Component component, Component other) =>
-            component.transform.DistanceTo(other.transform);
 
         public static T GetInterfaceType<T>(this Object obj) where T : class =>
             obj switch
@@ -138,9 +109,7 @@ namespace StrongExtensions
         public static T[] GetChildren<T>(this GameObject owner, bool includeInactive = false) =>
             owner.GetComponentsInChildren<T>(includeInactive);
 
-
-        public static Sprite ToSprite(this Texture2D texture2D) =>
-            Sprite.Create(texture2D, texture2D.Rect(), Pivot);
+        public static Sprite ToSprite(this Texture2D texture2D) => Sprite.Create(texture2D, texture2D.Rect(), Pivot);
 
         public static Vector2 Size(this Texture texture) => new Vector2(texture.width, texture.height);
 

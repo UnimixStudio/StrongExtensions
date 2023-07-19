@@ -46,4 +46,15 @@ namespace StrongExtensions
         protected override string DecorateValue(Color value) =>
             ColorUtility.ToHtmlStringRGBA(value).ToColor(value);
     }
+    
+    public class Vector3DebugColorDecorator : DebugColorDecorator<Vector3>
+    {
+        protected override string DecorateValue(Vector3 value) =>
+            value.ToString().ToColor(Color.green);
+    }
+    public class Vector2DebugColorDecorator : DebugColorDecorator<Vector2>
+    {
+        protected override string DecorateValue(Vector2 value) =>
+            value.ToString().ToColor(Color.blue);
+    }
 }

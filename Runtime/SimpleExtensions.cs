@@ -59,8 +59,10 @@ namespace StrongExtensions
 
         public static float Clamp(this float value, float min, float max) =>
             Mathf.Clamp(value, min, max);
+        public static float Min(this float value, float other) =>
+            Mathf.Min(value, other);
 
-        public static float Clamp(this int value, int min, int max) =>
+        public static int Clamp(this int value, int min, int max) =>
             Mathf.Clamp(value, min, max);
 
         public static float LerpTo(this float fromValue, float to, float time) =>

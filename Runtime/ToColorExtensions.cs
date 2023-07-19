@@ -4,11 +4,13 @@ namespace StrongExtensions
 {
 	public static class ToColorExtensions
 	{
+		public static Color Parse(this string value) => 
+			ColorUtility.TryParseHtmlString(value, out Color color) ? color : Color.white;
 		public static string ToColor(this string value, Color color) => 
 			value.ToHexColor(ColorUtility.ToHtmlStringRGB(color));
 
 		public static string ToHexColor(this string value, string hexColor) => 
-			$"<color=#{hexColor}>{value}</color>";
+			$"<color=#{hexColor.Replace("#","")}>{value}</color>";
 
 		public static string Black(this string value) =>
 			value.ToColor(Color.black);
@@ -27,6 +29,8 @@ namespace StrongExtensions
 
 		public static string Green(this string value) =>
 			value.ToColor(Color.green);
+		public static string Orange(this string value) => 
+			value.ToColor(Color.yellow + Color.red);
 
 		public static string Grey(this string value) =>
 			value.ToColor(Color.grey);

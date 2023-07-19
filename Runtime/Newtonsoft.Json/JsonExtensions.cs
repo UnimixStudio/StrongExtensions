@@ -1,20 +1,16 @@
-﻿using System.Drawing;
-using AnimalSimulator.JsonConverters;
+﻿using AnimalSimulator.JsonConverters;
 using Newtonsoft.Json;
 
 namespace StrongExtensions
 {
     public static class JsonExtensions
     {
-        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings()
+        private static readonly JsonSerializerSettings Settings = new()
         {
             Converters =
             {
                 new ColorConverter(),
                 new UnityObjectConverter(),
-                new IntReactivePropertyJsonConverter(),
-                new FloatReactivePropertyJsonConverter(),
-                new StringReactivePropertyJsonConverter(),
             }
         };
 

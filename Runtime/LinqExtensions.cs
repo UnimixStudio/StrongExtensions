@@ -14,9 +14,11 @@ namespace StrongExtensions
         // Return the first item when the list is of length one and otherwise returns default
         public static TSource OnlyOrDefault<TSource>(this IEnumerable<TSource> source)
         {
-            if (source.Count() > 1) return default;
+            IEnumerable<TSource> array = source as TSource[] ?? source.ToArray();
 
-            return source.FirstOrDefault();
+            return array.Count() > 1
+                ? default
+                : array.FirstOrDefault();
         }
 
         // These are more efficient than Count() in cases where the size of the collection is not known
@@ -54,8 +56,7 @@ namespace StrongExtensions
         // Log.Info(args.ContainsItem(null));
         // Log.Info(args.Where(x => x == null).Any());
         public static bool ContainsItem<T>(this IEnumerable<T> list, T value) =>
-
             // Use object.Equals to support null values
-            list.Where(x => Equals(x, value)).Any();
+            list.Any(x => Equals(x, value));
     }
 }

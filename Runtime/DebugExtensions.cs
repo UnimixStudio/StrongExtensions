@@ -1,17 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
-
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
 namespace StrongExtensions
 {
+   
+
     public static class DebugExtensions
     {
         private static readonly Dictionary<Type, IDebugColorDecorator> DebugColorDecorators =
-            new Dictionary<Type, IDebugColorDecorator>()
+            new()
             {
                 [typeof(bool)] = new BoolDebugColorDecorator(),
                 [typeof(int)] = new IntDebugColorDecorator(),
@@ -20,31 +22,40 @@ namespace StrongExtensions
                 [typeof(long)] = new LongDebugColorDecorator(),
                 [typeof(string)] = new StringDebugColorDecorator(),
                 [typeof(Color)] = new ColorDebugColorDecorator(),
+                [typeof(Vector3)] = new Vector3DebugColorDecorator(),
+                [typeof(Vector2)] = new Vector2DebugColorDecorator(),
             };
 
-        public static T Log<T>(this T value) =>
-            Log(value, string.Empty);
+        public static T Log<T>(this T value) => Log(value, string.Empty);
 
         public static T Log<T>(this T value, string name)
         {
+            string message = value.LogMessage(name);
+
+            Debug.Log(message, value as Object);
+
+            return value;
+        }
+
+        public static string LogMessage<T>(this T value, string name = default)
+        {
             Type type = typeof(T);
 
-            if (name == string.Empty)
+            if (name == default)
                 name = type.Name;
 
             bool decoratorExist = DebugColorDecorators.ContainsKey(type);
 
             string logName = decoratorExist
-                ? DebugColorDecorators[type].DecorateName(name)
+                ? DebugColorDecorators[type]
+                    .DecorateName(name)
                 : $"{name}";
 
-            string logValue = decoratorExist
-                ? DebugColorDecorators[type].DecorateValue(value)
-                : $"{value}";
+            string logValue = decoratorExist ? DebugColorDecorators[type]
+                    .DecorateValue(value) :
+                value == null ? "null".ToHexColor("#499cd5") : value.ToString();
 
-            Debug.Log($"{logName} : {logValue}", value as Object);
-
-            return value;
+            return $"{logName} : {logValue} {(value as Object)?.GetInstanceID()}";
         }
 
         public static T LogAsJson<T>(this T value, string name = "")
@@ -65,10 +76,7 @@ namespace StrongExtensions
 
             Debug.Log(log.Count());
 
-            IEnumerable<string> enumerable = log.Select(
-                arg => arg != null
-                    ? arg.ToString()
-                    : "null");
+            IEnumerable<string> enumerable = log.Select(arg => arg != null ? arg.ToString() : "null");
 
             Debug.Log(string.Join("\n", enumerable));
 
@@ -97,53 +105,67 @@ namespace StrongExtensions
             LogEvery(source as IEnumerable<T>)
                 .ToArray();
 
-        public static IEnumerable<T> LogEvery<T>(this IEnumerable<T> source)
+        public static IEnumerable<T> LogEvery<T>(this IEnumerable<T> source, string name = null)
         {
-            IEnumerable<T> logEvery = source as T[] ?? source.ToArray();
-            IEnumerable<T> log = source as T[] ?? logEvery.ToArray();
-
-            Type type = source.GetType();
-            bool isGenericType = type.IsGenericType;
-
-            string typeName = type.Name;
-            typeName = typeName.ToHexColor(HexColors.SandyBrown);
-
-            if (isGenericType)
+            if (source == null)
             {
-                Type argument = type.GenericTypeArguments.FirstOrDefault();
-
-                string argumentName = argument == null ? string.Empty : argument.Name;
-
-                typeName = typeName.Replace("`1", $"<{argumentName.ToHexColor(HexColors.DarkSlateGray)}>");
+                Debug.Log($"{name} : Null");
+                return source;
             }
 
-            string name = typeName;
+            name ??= GetTypeName(source);
 
-            string count = log.Count().ToString().ToHexColor(HexColors.LightSkyBlue);
+            T[] log = source as T[] ?? source.ToArray();
 
-            var message = $"{name} Count : {count}";
+            string count = log.Length.ToString()
+                .ToHexColor(HexColors.LightSkyBlue);
 
-            Debug.Log(message);
+            var stringDebugColorDecorator = new StringDebugColorDecorator();
+            name = stringDebugColorDecorator.DecorateValue(name);
 
-            foreach (T s in log)
-            {
-                message = s.ToString().ToHexColor(HexColors.CornflowerBlue);
+            Debug.Log($"{name} " + count.LogMessage("Count"));
 
-                Debug.Log(message, s as Object);
-            }
+            for (var i = 0; i < log.Length; i++)
+                log[i].Log($"[{i}]");
 
-            return logEvery;
+            return source;
         }
 
-        public static void LogMethod<T>(this T instance, string methodName) =>
-            Debug.Log(
-                $"{typeof(T).Name.ToHexColor(HexColors.Shamrock)}({instance.GetHashCode()})." +
-                $"{methodName.ToHexColor(HexColors.SandyBrown)}",
-                instance as Object);
+        private static string GetTypeName<T>(IEnumerable<T> source)
+        {
+            Type type = source.GetType();
+
+            string typeName = type.Name;
+
+            bool isGenericType = type.IsGenericType;
+
+            if (isGenericType == false)
+                return typeName.ToHexColor(HexColors.SandyBrown);
+
+            string argumentName = GetArgumentName<T>(type);
+
+            return typeName.Replace("`1", $"<{argumentName.ToHexColor(HexColors.DarkSlateGray)}>");
+        }
+
+        private static string GetArgumentName<T>(Type type)
+        {
+            Type[] genericTypeArguments = type.GenericTypeArguments;
+
+            Type argument = genericTypeArguments.FirstOrDefault();
+
+            bool argumentExists = argument != null;
+
+            return argumentExists ? argument.Name : string.Empty;
+        }
+
+        public static T LogMethod<T>(this T instance, string methodName) =>
+            instance
+                .With(x =>
+                Debug.Log(
+                    $"{typeof(T).Name.ToHexColor(HexColors.Shamrock)}({x.GetHashCode()})." +
+                    $"{methodName.ToHexColor(HexColors.SandyBrown)}", x as Object));
 
         public static void LogConstructor<T>(this T instance) =>
-            Debug.Log(
-                $"{typeof(T).Name.ToHexColor(HexColors.Shamrock)}({instance.GetHashCode()})", 
-                instance as Object);
+            Debug.Log($"{typeof(T).Name.ToHexColor(HexColors.Shamrock)}({instance.GetHashCode()})", instance as Object);
     }
 }

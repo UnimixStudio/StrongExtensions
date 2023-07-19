@@ -16,5 +16,7 @@
 			include
 				? value >= other
 				: value > other;
+		
+		public static bool IsZero(this float value) => value == 0;
 	}
 }

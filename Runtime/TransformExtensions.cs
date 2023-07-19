@@ -1,161 +1,168 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace StrongExtensions
 {
-    public static class TransformExtensions
-    {
-        public static void CenterOnChildren(this Transform parent)
-        {
-            Vector3 position = Vector3.zero;
+	public static class TransformExtensions
+	{
+		public static void CenterOnChildren(this Transform parent)
+		{
+			Vector3 position = Vector3.zero;
 
-            foreach (Transform child in parent)
-            {
-                position += child.position;
-                child.parent = null;
-            }
+			foreach(Transform child in parent)
+			{
+				position += child.position;
+				child.parent = null;
+			}
 
-            position /= parent.childCount;
+			position /= parent.childCount;
 
-            parent.position = position;
+			parent.position = position;
 
-            foreach (Transform child in parent)
-                child.parent = parent;
-        }
+			foreach(Transform child in parent)
+				child.parent = parent;
+		}
 
-        public static Transform[] GetActiveChildren(this Transform parent) =>
-            parent.Cast<Transform>().Where(child => child.gameObject.activeSelf).ToArray();
+		public static Transform[] GetActiveChildren(this Transform parent) =>
+			parent.Cast<Transform>().Where(child => child.gameObject.activeSelf).ToArray();
 
-        public static Vector3 Center(this IEnumerable<Transform> transforms)
-        {
-            if (transforms == null)
-                throw new ArgumentNullException(nameof(transforms));
+		public static Vector3 Center(this IEnumerable<Transform> transforms)
+		{
+			if (transforms == null)
+				throw new ArgumentNullException(nameof(transforms));
 
-            Transform[] array = transforms as Transform[] ?? transforms.ToArray();
+			Transform[] array = transforms as Transform[] ?? transforms.ToArray();
 
-            if (array.Length <= 0)
-                throw new ArgumentOutOfRangeException(nameof(transforms));
+			if (array.Length <= 0)
+				throw new ArgumentOutOfRangeException(nameof(transforms));
 
-            Vector3 position = array.Aggregate(
-                Vector3.zero,
-                (current, transform) => current + transform.position);
+			Vector3 position = array.Aggregate(Vector3.zero, (current, transform) => current + transform.position);
 
-            position /= array.Length;
+			position /= array.Length;
 
-            return position;
-        }
+			return position;
+		}
 
-        public static SerializableTransform ToSerializable(this Transform transform) =>
-            new SerializableTransform
-            {
-                Position = transform.position,
-                Rotation = transform.rotation,
-                LocalScale = transform.localScale
-            };
+		public static Vector3 Center(this IEnumerable<Vector3> points)
+		{
+			if (points == null)
+				throw new ArgumentNullException(nameof(points));
 
-        public static void Deserialize(this Transform transform, SerializableTransform serializableTransform)
-        {
-            transform.position = serializableTransform.Position;
-            transform.rotation = serializableTransform.Rotation;
-            transform.localScale = serializableTransform.LocalScale;
-        }
+			Vector3[] array = points as Vector3[] ?? points.ToArray();
 
-        public static bool TryGetClosest(this GameObject origin, IEnumerable<GameObject> from, out GameObject closest)
-        {
-            return TryGetClosest(origin, from.Select(Transforms), out closest);
+			if (array.Length <= 0)
+				throw new ArgumentOutOfRangeException(nameof(points));
 
-            Transform Transforms(GameObject go) => go.transform;
-        }
+			Vector3 position = array.Aggregate(Vector3.zero, (current, point) => current + point);
 
-        public static bool TryGetClosest(this GameObject origin, IEnumerable<Transform> from, out GameObject closest)
-        {
-            bool closestFound = TryGetClosest(origin.transform, from, out Transform near);
+			position /= array.Length;
 
-            closest = near.gameObject;
+			return position;
+		}
 
-            return closestFound;
-        }
+		public static SerializableTransform ToSerializable(this Transform transform) =>
+			new()
+			{
+				Position = transform.position,
+				Rotation = transform.rotation,
+				LocalScale = transform.localScale
+			};
 
-        public static bool TryGetClosest(this Transform transform, IEnumerable<Transform> from, out Transform closest)
-        {
-            closest = default;
+		public static void Deserialize(this Transform transform, SerializableTransform serializableTransform)
+		{
+			transform.position = serializableTransform.Position;
+			transform.rotation = serializableTransform.Rotation;
+			transform.localScale = serializableTransform.LocalScale;
+		}
 
-            if (from.IsEmpty())
-                return false;
+		public static bool TryGetClosest(this GameObject origin, IEnumerable<GameObject> from, out GameObject closest)
+		{
+			return TryGetClosest(origin, from.Select(Transforms), out closest);
 
-            closest = from
-                .Except(transform)
-                .OrderBy(Distance)
-                .FirstOrDefault();
+			Transform Transforms(GameObject go) => go.transform;
+		}
 
-            return closest != default;
+		public static bool TryGetClosest(this GameObject origin, IEnumerable<Transform> from, out GameObject closest)
+		{
+			bool closestFound = TryGetClosest(origin.transform, from, out Transform near);
 
-            float Distance(Transform other)
-            {
-                Vector3 firstPosition = transform.position;
-                Vector3 secondPosition = other.position;
+			closest = near.gameObject;
 
-                Vector3 direction = firstPosition - secondPosition;
+			return closestFound;
+		}
 
-                return direction.sqrMagnitude;
-            }
-        }
+		public static bool TryGetClosest(this Transform transform, IEnumerable<Transform> from, out Transform closest)
+		{
+			closest = default;
 
-        public static Vector3 FindPointOnNavmesh
-        (
-            this Transform origin,
-            Vector3 direction,
-            float maxDistance = float.MaxValue,
-            int allAreas = NavMesh.AllAreas
-        )
-        {
-            Vector3 position = origin.position + direction;
+			if (from.IsEmpty())
+				return false;
 
-            bool foundPoint = NavMesh.SamplePosition(position, out NavMeshHit hit, maxDistance, allAreas);
+			closest = from.Except(transform).OrderBy(Distance).FirstOrDefault();
 
-            if (foundPoint)
-                position = hit.position;
+			return closest != default;
 
-            return position;
-        }
+			float Distance(Transform other)
+			{
+				Vector3 firstPosition = transform.position;
+				Vector3 secondPosition = other.position;
 
-        public static void PlaceOnNavMesh
-        (
-            this Transform origin,
-            float maxDistance = float.MaxValue,
-            int allAreas = NavMesh.AllAreas
-        )
-        {
-            Vector3 position = origin.position;
+				Vector3 direction = firstPosition - secondPosition;
 
-            bool foundPoint = NavMesh.SamplePosition(position, out NavMeshHit hit, maxDistance, allAreas);
+				return direction.sqrMagnitude;
+			}
+		}
 
-            if (foundPoint)
-                position = hit.position;
+		public static Vector3 FindPointOnNavmesh
+		(
+			this Transform origin,
+			Vector3 direction,
+			float maxDistance = float.MaxValue,
+			int allAreas = NavMesh.AllAreas
+		)
+		{
+			Vector3 position = origin.position + direction;
 
-            origin.position = position;
-        }
-        
-        
-    }
+			bool foundPoint = NavMesh.SamplePosition(position, out NavMeshHit hit, maxDistance, allAreas);
 
-    [Serializable]
-    public class SerializableTransform
-    {
-        public Vector3 Position;
-        public Quaternion Rotation;
-        public Vector3 LocalScale;
+			if (foundPoint)
+				position = hit.position;
 
-        public static implicit operator SerializableTransform(Component component) =>
-            component.transform.ToSerializable();
+			return position;
+		}
 
-        public static implicit operator SerializableTransform(GameObject gameObject) =>
-            gameObject.transform.ToSerializable();
+		public static void PlaceOnNavMesh
+			(this Transform origin, float maxDistance = float.MaxValue, int allAreas = NavMesh.AllAreas)
+		{
+			Vector3 position = origin.position;
 
-        public static implicit operator SerializableTransform(Transform transform) =>
-            transform.ToSerializable();
-    }
+			bool foundPoint = NavMesh.SamplePosition(position, out NavMeshHit hit, maxDistance, allAreas);
+
+			if (foundPoint)
+				position = hit.position;
+
+			origin.position = position;
+		}
+	}
+
+	[Serializable]
+	public class SerializableTransform
+	{
+		public Vector3 Position;
+		public Quaternion Rotation;
+		public Vector3 LocalScale;
+
+		public static implicit operator SerializableTransform(Component component) =>
+			component.transform.ToSerializable();
+
+		public static implicit operator SerializableTransform(GameObject gameObject) =>
+			gameObject.transform.ToSerializable();
+
+		public static implicit operator SerializableTransform(Transform transform) =>
+			transform.ToSerializable();
+	}
 }

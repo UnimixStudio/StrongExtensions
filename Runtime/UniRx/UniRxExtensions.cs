@@ -25,5 +25,8 @@ namespace StrongExtensions
         
         public static IObserver<T> ToObserver<T>(this IReactiveCommand<T> command) =>
             Observer.Create((T value) => command.Execute(value));
+        
+        public static IObserver<T> ToObserver<T>(this ISubject<T> observable) =>
+            Observer.Create((T value) => observable.OnNext(value));
     }
 }

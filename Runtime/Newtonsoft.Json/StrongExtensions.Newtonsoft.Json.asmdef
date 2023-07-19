@@ -2,7 +2,7 @@
     "name": "StrongExtensions.Newtonsoft.Json",
     "rootNamespace": "",
     "references": [
-        "GUID:867ebe6eb897f4d4393c342ac1997326"
+        "StrongExtensions.Newtonsoft.Json.Converters.UniRx"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

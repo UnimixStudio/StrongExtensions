@@ -2,8 +2,9 @@
     "name": "StrongExtensions.UniRx",
     "rootNamespace": "",
     "references": [
-        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
-        "GUID:101b39b721dbe1047b0eaa774320d287"
+        "UniRx",
+        "StrongExtensions.Runtime",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

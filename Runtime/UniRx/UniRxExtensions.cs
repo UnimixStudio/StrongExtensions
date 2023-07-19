@@ -22,5 +22,8 @@ namespace StrongExtensions
 
         public static IObserver<T> ToObserver<T>(this IReactiveProperty<T> reactiveProperty) =>
             Observer.Create((T value) => reactiveProperty.Value = value);
+        
+        public static IObserver<T> ToObserver<T>(this IReactiveCommand<T> command) =>
+            Observer.Create((T value) => command.Execute(value));
     }
 }

@@ -33,6 +33,20 @@ namespace StrongExtensions
 				throw;
 			}
 		}
+		public static TResult Try<T, TResult>(this T item, Func<T,TResult> func, Exception defaultException = null)
+		{
+			try
+			{
+				return func(item);
+			}
+			catch (Exception)
+			{
+				if (defaultException != null)
+					throw defaultException;
+
+				throw;
+			}
+		}
 		public static TResult Try<T, TResult>(this T item, Func<TResult> func, out bool canExecute,Exception defaultException = null)
 		{
 			canExecute = true;

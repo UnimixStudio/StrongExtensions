@@ -18,6 +18,6 @@ namespace AnimalSimulator.JsonConverters
 				: new ReactiveProperty<int>(int.Parse(reader.Value.ToString()));
 
 		public override bool CanConvert(Type objectType) =>
-			objectType.IsAssignableFrom(typeof(IReadOnlyReactiveProperty<float>));
+			objectType.IsAssignableFrom(typeof(IReadOnlyReactiveProperty<int>));
 	}
 }

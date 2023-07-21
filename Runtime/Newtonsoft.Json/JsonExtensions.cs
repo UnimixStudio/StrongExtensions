@@ -14,6 +14,20 @@ namespace StrongExtensions
             }
         };
 
+        public static void PutConverter(JsonConverter converter)
+        {
+            if (converter == null)
+                return;
+            
+            foreach (var jsonConverter in Settings.Converters)
+            {
+                if (jsonConverter.GetType() == converter.GetType())
+                    return;
+            }
+            
+            Settings.Converters.Add(converter);
+        }
+
         public static string ToJson<T>(this T target, bool prettyPrint = false)
         {
             Formatting formatting = prettyPrint

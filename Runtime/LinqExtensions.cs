@@ -14,11 +14,9 @@ namespace StrongExtensions
         // Return the first item when the list is of length one and otherwise returns default
         public static TSource OnlyOrDefault<TSource>(this IEnumerable<TSource> source)
         {
-            IEnumerable<TSource> array = source as TSource[] ?? source.ToArray();
-
-            return array.Count() > 1
-                ? default
-                : array.FirstOrDefault();
+            var internalCollection = source.Take(2).ToArray();
+            var count = internalCollection.Length;
+            return count == 1 ? internalCollection.First() : default;
         }
 
         // These are more efficient than Count() in cases where the size of the collection is not known

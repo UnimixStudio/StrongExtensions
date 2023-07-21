@@ -9,14 +9,14 @@ namespace AnimalSimulator.JsonConverters
 	public class FloatReactivePropertyJsonConverter : JsonConverter
 	{
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) =>
-			writer.WriteValue(((FloatReactiveProperty)value)?.Value ?? 0f);
+			writer.WriteValue(((IReadOnlyReactiveProperty<float>)value)?.Value ?? 0f);
 
 		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) =>
 			reader.TokenType == JsonToken.Null
-				? new FloatReactiveProperty()
-				: new FloatReactiveProperty(float.Parse(reader.Value.ToString()));
+				? new ReactiveProperty<float>()
+				: new ReactiveProperty<float>(float.Parse(reader.Value.ToString()));
 
 		public override bool CanConvert(Type objectType) =>
-			objectType == typeof(FloatReactiveProperty);
+			objectType.IsAssignableFrom(typeof(IReadOnlyReactiveProperty<float>));
 	}
 }

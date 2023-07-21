@@ -1,10 +1,18 @@
-﻿namespace StrongExtensions
+﻿using System;
+
+namespace StrongExtensions
 {
     public static class ObjectExtensions
     {
-        public static T IfNull<T>(this T value, T newValue)
+        [Obsolete("Use SetIfNull")]
+        public static T IfNull<T>(this T source, T newValue)
+            where T : class
+            => source.SetIfNull(newValue);
+        
+        
+        public static T SetIfNull<T>(this T SetIfNull, T newValue)
             where T : class
             =>
-                value ??= newValue;
+                SetIfNull ??= newValue;
     }
 }

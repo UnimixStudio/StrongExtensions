@@ -22,11 +22,5 @@ namespace StrongExtensions
 
             return copy as T;
         }
-
-        public static void Activate<T>(this T component) where T : Component =>
-            component.gameObject.Activate();
-
-        public static void Deactivate<T>(this T component) where T : Component =>
-            component.gameObject.Deactivate();
     }
 }

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace StrongExtensions
 {
@@ -6,16 +8,34 @@ namespace StrongExtensions
 
     public static class GameObjectExtensions    
     {
-        public static void Activate(this GameObject gameObject) => gameObject.SetActive(true);
-        public static void Deactivate(this GameObject gameObject) => gameObject.SetActive(false);
-        
+        public static void Activate(this GameObject gameObject)
+        {
+            if (gameObject.activeSelf)
+                return;
+            gameObject.SetActive(true);
+        }
+
+        public static void Deactivate(this GameObject gameObject)
+        {
+            if (!gameObject.activeSelf)
+                return;
+            gameObject.SetActive(false);
+        }
+
         public static void SetActive(this IEnumerable<GameObject> gameObjects, bool value)
         {
             foreach(GameObject gameObject in gameObjects)
                 gameObject.SetActive(value);
         }
 
+        [Obsolete("Use RemoveComponentsInChildren")]
         public static void RemoveComponents<TComponent>(this GameObject gameObject)
+            where TComponent : Component
+        {
+            gameObject.RemoveComponentsInChildren<TComponent>();
+        }
+        
+        public static void RemoveComponentsInChildren<TComponent>(this GameObject gameObject)
             where TComponent : Component
         {
             foreach(TComponent component in gameObject.GetComponentsInChildren<TComponent>())

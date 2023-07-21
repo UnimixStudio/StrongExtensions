@@ -9,7 +9,7 @@ namespace AnimalSimulator.JsonConverters
 	public class StringReactivePropertyJsonConverter : JsonConverter
 	{
 		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) =>
-			writer.WriteValue(value == null ? "" : ((StringReactiveProperty)value).Value);
+			writer.WriteValue(value == null ? "" : ((IReadOnlyReactiveProperty<string>)value).Value);
 
 		public override object ReadJson
 		(
@@ -19,10 +19,10 @@ namespace AnimalSimulator.JsonConverters
 			JsonSerializer serializer
 		) =>
 			reader.TokenType == JsonToken.Null
-				? new StringReactiveProperty()
-				: new StringReactiveProperty(reader.Value.ToString());
+				? new ReactiveProperty<string>()
+				: new ReactiveProperty<string>(reader.Value.ToString());
 
 		public override bool CanConvert(Type objectType) =>
-			objectType == typeof(StringReactiveProperty);
+			objectType.IsAssignableFrom(typeof(IReadOnlyReactiveProperty<string>));
 	}
 }

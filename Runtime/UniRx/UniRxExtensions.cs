@@ -5,6 +5,8 @@ namespace StrongExtensions
 {
     public static class UniRxExtensions
     {
+        public static IDisposable Subscribe(this IObservable<Unit> observable, Action onNext) =>
+            observable.Subscribe(_ => onNext());
         public static void Send<T>(this IObserver<T> observable, T arg, bool when) =>
             observable.With(x => x.OnNext(arg), when);
 

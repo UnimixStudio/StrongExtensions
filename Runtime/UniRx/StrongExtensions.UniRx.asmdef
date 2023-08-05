@@ -1,6 +1,6 @@
 {
     "name": "StrongExtensions.UniRx",
-    "rootNamespace": "",
+    "rootNamespace": "UniRx",
     "references": [
         "UniRx",
         "StrongExtensions.Runtime",

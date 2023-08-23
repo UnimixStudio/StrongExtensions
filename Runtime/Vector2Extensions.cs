@@ -52,5 +52,8 @@ namespace StrongExtensions
 				length += Vector2.Distance(path[i - 1], path[i]);
 			return length;
 		}
+		public static bool HasNaN(this Vector2 vector) =>
+			float.IsNaN(vector.x) || float.IsNaN(vector.y);
+
 	}
 }

@@ -89,5 +89,8 @@ namespace StrongExtensions
 				length += Vector3.Distance(path[i - 1], path[i]);
 			return length;
 		}
+		
+		public static bool HasNaN(this Vector3 vector) =>
+			float.IsNaN(vector.x) || float.IsNaN(vector.y) || float.IsNaN(vector.z);
 	}
 }

@@ -21,5 +21,8 @@
 		public static bool IsNotZero(this float value) => value != 0;
 		public static bool IsMoreZero(this float value) => value > 0;
 		public static bool IsMoreOrEqualsZero(this float value) => value >= 0;
+		
+		public static bool IsNaN(this float value) => float.IsNaN(value);
+		public static bool IsInfinity(this float value) => float.IsInfinity(value);
 	}
 }

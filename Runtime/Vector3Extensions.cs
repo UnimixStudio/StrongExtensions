@@ -91,6 +91,12 @@ namespace StrongExtensions
 		}
 		
 		public static bool HasNaN(this Vector3 vector) =>
-			float.IsNaN(vector.x) || float.IsNaN(vector.y) || float.IsNaN(vector.z);
+			vector.x.IsNaN() || vector.y.IsNaN() || vector.z.IsNaN();
+		
+		public static bool HasInfinity(this Vector3 vector) =>
+			vector.x.IsInfinity() || vector.y.IsInfinity() || vector.z.IsInfinity();
+		
+		public static bool HasNaNOrInfinity(this Vector3 vector) => 
+			vector.HasNaN() || vector.HasInfinity();
 	}
 }

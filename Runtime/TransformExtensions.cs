@@ -9,6 +9,9 @@ namespace StrongExtensions
 {
 	public static class TransformExtensions
 	{
+		public static void AddChild(this Transform parent, Transform child) =>
+			child.SetParent(parent);
+
 		public static void CenterOnChildren(this Transform parent)
 		{
 			Vector3 position = Vector3.zero;
@@ -28,7 +31,10 @@ namespace StrongExtensions
 		}
 
 		public static Transform[] GetActiveChildren(this Transform parent) =>
-			parent.Cast<Transform>().Where(child => child.gameObject.activeSelf).ToArray();
+			parent
+				.Cast<Transform>()
+				.Where(child => child.gameObject.activeSelf)
+				.ToArray();
 
 		public static Vector3 Center(this IEnumerable<Transform> transforms)
 		{
@@ -102,7 +108,10 @@ namespace StrongExtensions
 			if (from.IsEmpty())
 				return false;
 
-			closest = from.Except(transform).OrderBy(Distance).FirstOrDefault();
+			closest = from
+				.Except(transform)
+				.OrderBy(Distance)
+				.FirstOrDefault();
 
 			return closest != default;
 

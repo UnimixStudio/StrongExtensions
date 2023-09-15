@@ -47,14 +47,14 @@ namespace StrongExtensions
 
 			bool decoratorExist = DebugColorDecorators.ContainsKey(type);
 
-			string logName = decoratorExist
-				? DebugColorDecorators[type].DecorateName(name)
-				: $"{name}";
+			string logName = decoratorExist ? DebugColorDecorators[type]
+					.DecorateName(name) : $"{name}";
 
-			string logValue = decoratorExist ? DebugColorDecorators[type].DecorateValue(value) :
+			string logValue = decoratorExist ? DebugColorDecorators[type]
+					.DecorateValue(value) :
 				value == null ? "null".ToHexColor("#499cd5") : value.ToString();
 
-			return$"{logName} : {logValue} {(value as Object)?.GetInstanceID()}";
+			return $"{logName} : {logValue} {(value as Object)?.GetInstanceID()}";
 		}
 
 		[HideInCallstack]
@@ -72,16 +72,17 @@ namespace StrongExtensions
 		}
 
 		[HideInCallstack]
-		public static IEnumerable<T> Log<T>(this IEnumerable<T> source)
+		public static IEnumerable<T> DebugLog<T>(this IEnumerable<T> source, Func<T, int, string> extract = default)
 		{
+			extract ??= (x, i) => $"[{i}] = {x.LogMessage()}";
+
 			IEnumerable<T> log = source as T[] ?? source.ToArray();
 
-			Debug.Log(log.Count());
+			log
+				.Count()
+				.Log("Count");
 
-			IEnumerable<string> enumerable = log.Select(
-				arg => arg != null
-					? arg.ToString()
-					: "null");
+			IEnumerable<string> enumerable = log.Select((arg, i) => arg != null ? extract(arg, i) : "null");
 
 			Debug.Log(string.Join("\n", enumerable));
 
@@ -105,11 +106,13 @@ namespace StrongExtensions
 
 		[HideInCallstack]
 		public static List<T> LogEvery<T>(this List<T> source) =>
-			LogEvery(source as IEnumerable<T>).ToList();
+			LogEvery(source as IEnumerable<T>)
+				.ToList();
 
 		[HideInCallstack]
 		public static T[] LogEvery<T>(this T[] source) =>
-			LogEvery(source as IEnumerable<T>).ToArray();
+			LogEvery(source as IEnumerable<T>)
+				.ToArray();
 
 		[HideInCallstack]
 		public static IEnumerable<T> LogEvery<T>(this IEnumerable<T> source, string name = null)
@@ -124,7 +127,9 @@ namespace StrongExtensions
 
 			T[] log = source as T[] ?? source.ToArray();
 
-			string count = log.Length.ToString().ToHexColor(HexColors.LightSkyBlue);
+			string count = log
+				.Length.ToString()
+				.ToHexColor(HexColors.LightSkyBlue);
 
 			var stringDebugColorDecorator = new StringDebugColorDecorator();
 			name = stringDebugColorDecorator.DecorateValue(name);
@@ -132,7 +137,8 @@ namespace StrongExtensions
 			Debug.Log($"{name} " + count.LogMessage("Count"));
 
 			for (var i = 0; i < log.Length; i++)
-				log[i].Log($"[{i}]");
+				log[i]
+					.Log($"[{i}]");
 
 			return source;
 		}
@@ -163,9 +169,7 @@ namespace StrongExtensions
 
 			bool argumentExists = argument != null;
 
-			return argumentExists
-				? argument.Name
-				: string.Empty;
+			return argumentExists ? argument.Name : string.Empty;
 		}
 
 		[HideInCallstack]

@@ -1,9 +1,10 @@
 ﻿using AnimalSimulator.JsonConverters;
+
 using Newtonsoft.Json;
 
 namespace StrongExtensions
 {
-    public static class JsonExtensions
+    public static class JsonDotNetExtensions
     {
         private static readonly JsonSerializerSettings Settings = new()
         {

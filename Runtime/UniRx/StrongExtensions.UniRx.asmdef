@@ -13,7 +13,7 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [
-        "UNIRX"
+        "STRONG_EXTENSIONS_UNIRX"
     ],
     "versionDefines": [],
     "noEngineReferences": false

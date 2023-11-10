@@ -47,14 +47,14 @@ namespace StrongExtensions
 
 			bool decoratorExist = DebugColorDecorators.ContainsKey(type);
 
-			string logName = decoratorExist ? DebugColorDecorators[type]
-					.DecorateName(name) : $"{name}";
+			string logName = decoratorExist
+				? DebugColorDecorators[type].DecorateName(name)
+				: $"{name}";
 
-			string logValue = decoratorExist ? DebugColorDecorators[type]
-					.DecorateValue(value) :
+			string logValue = decoratorExist ? DebugColorDecorators[type].DecorateValue(value) :
 				value == null ? "null".ToHexColor("#499cd5") : value.ToString();
 
-			return $"{logName} : {logValue} {(value as Object)?.GetInstanceID()}";
+			return$"{logName} : {logValue} {(value as Object)?.GetInstanceID()}";
 		}
 
 		[HideInCallstack]
@@ -78,11 +78,12 @@ namespace StrongExtensions
 
 			IEnumerable<T> log = source as T[] ?? source.ToArray();
 
-			log
-				.Count()
-				.Log("Count");
+			log.Count().Log("Count");
 
-			IEnumerable<string> enumerable = log.Select((arg, i) => arg != null ? extract(arg, i) : "null");
+			IEnumerable<string> enumerable = log.Select(
+				(arg, i) => arg != null
+					? extract(arg, i)
+					: "null");
 
 			Debug.Log(string.Join("\n", enumerable));
 
@@ -106,45 +107,36 @@ namespace StrongExtensions
 
 		[HideInCallstack]
 		public static List<T> LogEvery<T>(this List<T> source) =>
-			LogEvery(source as IEnumerable<T>)
-				.ToList();
+			LogEvery(source.ToArray(), GetCollectionTypeName(source)).ToList();
 
 		[HideInCallstack]
 		public static T[] LogEvery<T>(this T[] source) =>
-			LogEvery(source as IEnumerable<T>)
-				.ToArray();
+			LogEvery(source, GetCollectionTypeName(source)).ToArray();
 
 		[HideInCallstack]
-		public static IEnumerable<T> LogEvery<T>(this IEnumerable<T> source, string name = null)
+		public static T[] LogEvery<T>(this T[] source, string name)
 		{
 			if (source == null)
 			{
 				Debug.Log($"{name} : Null");
-				return source;
+				return null;
 			}
 
-			name ??= GetTypeName(source);
-
-			T[] log = source as T[] ?? source.ToArray();
-
-			string count = log
-				.Length.ToString()
-				.ToHexColor(HexColors.LightSkyBlue);
+			string count = source.Length.ToString().ToHexColor(HexColors.LightSkyBlue);
 
 			var stringDebugColorDecorator = new StringDebugColorDecorator();
 			name = stringDebugColorDecorator.DecorateValue(name);
 
 			Debug.Log($"{name} " + count.LogMessage("Count"));
 
-			for (var i = 0; i < log.Length; i++)
-				log[i]
-					.Log($"[{i}]");
+			for (var i = 0; i < source.Length; i++)
+				source[i].Log($"[{i}]");
 
 			return source;
 		}
 
 		[HideInCallstack]
-		private static string GetTypeName<T>(IEnumerable<T> source)
+		private static string GetCollectionTypeName<T>(IEnumerable<T> source)
 		{
 			Type type = source.GetType();
 
@@ -169,7 +161,9 @@ namespace StrongExtensions
 
 			bool argumentExists = argument != null;
 
-			return argumentExists ? argument.Name : string.Empty;
+			return argumentExists
+				? argument.Name
+				: string.Empty;
 		}
 
 		[HideInCallstack]

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace StrongExtensions
+﻿namespace StrongExtensions
 {
 	public static class IntExtensions
 	{
@@ -18,17 +16,10 @@ namespace StrongExtensions
 			include
 				? value >= other
 				: value > other;
-
+		
 		public static bool IsZero(this int value) => value == 0;
-
 		public static bool IsNotZero(this int value) => value != 0;
-
 		public static bool IsMoreZero(this int value) => value > 0;
-
 		public static bool IsMoreOrEqualsZero(this int value) => value >= 0;
-
-		public static int NextIndex(this int index, int count) => (int)Mathf.Repeat(++index, count);
-
-		public static int PreviousIndex(this int index, int count) => (int)Mathf.Repeat(--index, count);
 	}
 }

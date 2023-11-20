@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -22,12 +21,12 @@ namespace StrongExtensions
                 if (current == '_' && i + 1 < input.Length)
                 {
                     char next = input[i + 1];
-
+                    
                     if (char.IsLower(next))
                         next = char.ToUpper(next, CultureInfo.InvariantCulture);
 
                     builder.Append(next);
-
+                    
                     i++;
                 }
                 else
@@ -107,7 +106,5 @@ namespace StrongExtensions
 
         public static string Regex(this string str, string pattern) =>
             System.Text.RegularExpressions.Regex.Match(str, pattern).Value;
-
-        public static string Concat(this IEnumerable<string> strings) => string.Concat(strings);
     }
 }
